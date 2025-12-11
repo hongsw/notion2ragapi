@@ -14,7 +14,7 @@ tiktoken
 
 # Vector Database - Multiple options for different deployments
 faiss-cpu  # Local development and Railway Volumes
-pinecone-client==3.0.0  # Managed vector database (recommended for Railway)
+pinecone-client==2.2.4  # Managed vector database (Python 3.14 compatible)
 # chromadb  # Temporarily disabled for Python 3.14
 # qdrant-client==1.7.0  # Optional for production
 

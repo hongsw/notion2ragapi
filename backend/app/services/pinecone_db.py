@@ -12,7 +12,6 @@ logger = structlog.get_logger(__name__)
 
 try:
     import pinecone
-    from pinecone import Pinecone
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False
@@ -24,7 +23,6 @@ class PineconeVectorDB(VectorDBInterface):
 
     def __init__(self):
         """Initialize Pinecone vector database."""
-        self.client: Optional[Pinecone] = None
         self.index = None
         self.index_name = "notion-rag"
         self.dimension = 1536  # OpenAI embedding dimension
@@ -38,24 +36,23 @@ class PineconeVectorDB(VectorDBInterface):
             raise ValueError("PINECONE_API_KEY environment variable is required")
 
         try:
-            # Initialize Pinecone client
-            self.client = Pinecone(api_key=settings.pinecone_api_key)
+            # Initialize Pinecone (v2.2.4 API)
+            pinecone.init(
+                api_key=settings.pinecone_api_key,
+                environment="us-east-1-aws"  # Free tier environment
+            )
 
             # Check if index exists, create if not
-            if self.index_name not in self.client.list_indexes().names():
+            if self.index_name not in pinecone.list_indexes():
                 logger.info(f"Creating Pinecone index: {self.index_name}")
-                self.client.create_index(
+                pinecone.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
-                    metric="cosine",
-                    spec=pinecone.ServerlessSpec(
-                        cloud="aws",
-                        region="us-east-1"  # Free tier region
-                    )
+                    metric="cosine"
                 )
 
             # Get index reference
-            self.index = self.client.Index(self.index_name)
+            self.index = pinecone.Index(self.index_name)
             logger.info("Pinecone index initialized successfully", index=self.index_name)
 
         except Exception as e:
@@ -174,7 +171,7 @@ class PineconeVectorDB(VectorDBInterface):
 
         try:
             stats = self.index.describe_index_stats()
-            return stats.total_vector_count
+            return stats['total_vector_count']
         except Exception as e:
             logger.error("Failed to count documents in Pinecone", error=str(e))
             return 0
