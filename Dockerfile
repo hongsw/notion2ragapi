@@ -8,8 +8,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PORT=8001
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -37,12 +36,12 @@ RUN mkdir -p /app/chroma_db /app/logs && \
 # Set Python path
 ENV PYTHONPATH=/app
 
-# Expose port (Railway uses dynamic PORT)
-EXPOSE $PORT
+# Expose port (Railway will set PORT dynamically)
+EXPOSE 8000
 
-# Health check for Railway
+# Health check for Railway (use Railway's dynamic PORT)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:$PORT/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Run the application with dynamic port
 CMD ["sh", "-c", "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"]

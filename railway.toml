@@ -9,13 +9,5 @@ healthcheckTimeout = 600
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
-[environments.production]
-variables = []
-
-[environments.production.services.app]
-source = "backend/app"
-
-# Volume for persistent data storage (FAISS index files)
-[[environments.production.volumes]]
-name = "faiss-data"
-mountPath = "/app/chroma_db"
+# Note: Railway automatically provides PORT environment variable
+# No additional configuration needed
