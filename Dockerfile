@@ -43,5 +43,6 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# Run the application (PORT is handled by FastAPI settings from environment variable)
-CMD ["python", "-m", "uvicorn", "backend.app.main:app", "--host", "0.0.0.0"]
+# Change to backend directory and run the application
+WORKDIR /app/backend
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0"]
