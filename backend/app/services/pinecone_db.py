@@ -56,8 +56,39 @@ class PineconeVectorDB(VectorDBInterface):
             logger.info("Pinecone index initialized successfully", index=self.index_name)
 
         except Exception as e:
-            logger.error("Failed to initialize Pinecone", error=str(e))
-            raise
+            error_msg = str(e)
+
+            # Parse specific Pinecone error messages
+            if "no pod quota available" in error_msg.lower():
+                logger.error(
+                    "Pinecone initialization failed: No pod quota available",
+                    error_detail="Your Pinecone project has reached its pod limit. Please delete unused indexes or upgrade your plan.",
+                    index_name=self.index_name,
+                    raw_error=error_msg
+                )
+                raise RuntimeError(f"Pinecone pod quota exceeded. Please check your Pinecone dashboard for index '{self.index_name}'")
+            elif "invalid api key" in error_msg.lower():
+                logger.error(
+                    "Pinecone initialization failed: Invalid API key",
+                    error_detail="The provided Pinecone API key is invalid or expired.",
+                    raw_error=error_msg
+                )
+                raise RuntimeError("Invalid Pinecone API key. Please check your PINECONE_API_KEY environment variable")
+            elif "unauthorized" in error_msg.lower():
+                logger.error(
+                    "Pinecone initialization failed: Authentication error",
+                    error_detail="Unable to authenticate with Pinecone. Check your API key.",
+                    raw_error=error_msg
+                )
+                raise RuntimeError("Pinecone authentication failed. Please verify your API key")
+            else:
+                logger.error(
+                    "Failed to initialize Pinecone",
+                    error_detail="An unexpected error occurred while connecting to Pinecone.",
+                    index_name=self.index_name,
+                    raw_error=error_msg
+                )
+                raise RuntimeError(f"Pinecone initialization failed: {error_msg}")
 
     async def add_documents(self, documents: List[Dict[str, Any]]):
         """Add documents with embeddings to Pinecone."""

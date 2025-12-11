@@ -53,9 +53,40 @@ async def lifespan(app: FastAPI):
         else:
             logger.warning("Vector database initialization skipped - missing configuration")
             logger.info("App started in degraded mode - configure NOTION_TOKEN and OPENAI_API_KEY to enable full functionality")
+    except RuntimeError as e:
+        # Specific error messages from Pinecone
+        error_msg = str(e)
+        if "pod quota exceeded" in error_msg:
+            logger.error(
+                "Vector database initialization failed",
+                error_type="Pinecone Pod Quota Exceeded",
+                resolution="Please check your Pinecone dashboard and delete unused indexes or upgrade your plan",
+                error=error_msg
+            )
+        elif "Invalid Pinecone API key" in error_msg:
+            logger.error(
+                "Vector database initialization failed",
+                error_type="Invalid API Key",
+                resolution="Please check your PINECONE_API_KEY environment variable",
+                error=error_msg
+            )
+        elif "authentication failed" in error_msg:
+            logger.error(
+                "Vector database initialization failed",
+                error_type="Authentication Failed",
+                resolution="Please verify your Pinecone API key is correct and active",
+                error=error_msg
+            )
+        else:
+            logger.error(
+                "Failed to initialize vector database",
+                error_type="Initialization Error",
+                error=error_msg
+            )
+        logger.warning("App started in degraded mode - vector database unavailable")
     except Exception as e:
         logger.error("Failed to initialize vector database", error=str(e))
-        logger.info("App started in degraded mode - vector database unavailable")
+        logger.warning("App started in degraded mode - vector database unavailable")
 
     yield
 
