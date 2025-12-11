@@ -3,7 +3,7 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "cd backend && python -m uvicorn app.main:app --host 0.0.0.0"
+startCommand = "python -m uvicorn app.main:app --host 0.0.0.0"
 healthcheckPath = "/health"
 healthcheckTimeout = 600
 restartPolicyType = "on_failure"
