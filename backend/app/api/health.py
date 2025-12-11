@@ -12,11 +12,14 @@ logger = structlog.get_logger(__name__)
 
 @router.get("/health")
 async def health_check() -> Dict[str, Any]:
-    """Basic health check endpoint."""
+    """Basic health check endpoint for Railway deployment."""
+    # Always return healthy for basic Railway healthcheck
+    # Detailed health is available at /health/detailed
     return {
         "status": "healthy",
         "service": "Notion2RAG2API",
-        "version": "0.1.0"
+        "version": "0.1.0",
+        "message": "Service is running"
     }
 
 

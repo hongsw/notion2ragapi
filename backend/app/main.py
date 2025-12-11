@@ -41,20 +41,27 @@ async def lifespan(app: FastAPI):
                 port=settings.port,
                 vector_db=settings.vector_db_type)
 
-    # Initialize vector database
+    # Initialize vector database (non-blocking for Railway deployment)
+    app.state.vector_service = None
     try:
-        vector_service = VectorDBService()
-        await vector_service.initialize()
-        app.state.vector_service = vector_service
-        logger.info("Vector database initialized successfully")
+        # Check if essential config is available before initializing
+        if settings.notion_token and settings.openai_api_key:
+            vector_service = VectorDBService()
+            await vector_service.initialize()
+            app.state.vector_service = vector_service
+            logger.info("Vector database initialized successfully")
+        else:
+            logger.warning("Vector database initialization skipped - missing configuration")
+            logger.info("App started in degraded mode - configure NOTION_TOKEN and OPENAI_API_KEY to enable full functionality")
     except Exception as e:
         logger.error("Failed to initialize vector database", error=str(e))
+        logger.info("App started in degraded mode - vector database unavailable")
 
     yield
 
     # Shutdown
     logger.info("Shutting down Notion2RAG2API server")
-    if hasattr(app.state, "vector_service"):
+    if hasattr(app.state, "vector_service") and app.state.vector_service:
         await app.state.vector_service.close()
 
 
