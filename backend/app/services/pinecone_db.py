@@ -24,7 +24,7 @@ class PineconeVectorDB(VectorDBInterface):
     def __init__(self):
         """Initialize Pinecone vector database."""
         self.index = None
-        self.index_name = "d1536"
+        self.index_name = settings.pinecone_index_name
         self.dimension = 1536  # OpenAI embedding dimension
 
     async def initialize(self):

@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     qdrant_api_key: Optional[str] = Field(None, env="QDRANT_API_KEY")
     pinecone_api_key: Optional[str] = Field(None, env="PINECONE_API_KEY")
     pinecone_environment: Optional[str] = Field(None, env="PINECONE_ENVIRONMENT")
+    pinecone_index_name: str = Field("d1536", env="PINECONE_INDEX_NAME")
 
     # Server Configuration
     port: int = Field(5000, env="PORT")
