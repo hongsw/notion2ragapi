@@ -3,11 +3,11 @@ builder = "dockerfile"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "python -m uvicorn backend.app.main:app --host 0.0.0.0"
 healthcheckPath = "/health"
 healthcheckTimeout = 600
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
-# Note: Railway automatically provides PORT environment variable
-# No additional configuration needed
+# Railway will automatically provide PORT environment variable
+# Dockerfile uses ${PORT:-8000} for fallback
