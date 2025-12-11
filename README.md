@@ -20,7 +20,23 @@ Notion 문서를 자동으로 RAG(Retrieval-Augmented Generation)로 변환하�
 
 ## 🛠️ 설치 방법
 
-### 방법 1: Docker 사용 (권장)
+### 방법 1: Railway 배포 (가장 쉬움) 🚀
+
+1. [Railway](https://railway.app)에 GitHub 계정으로 로그인
+2. "Deploy from GitHub repo" 선택
+3. `hongsw/notion2ragapi` 저장소 선택
+4. **Variables** 탭에서 환경 변수 설정:
+   ```bash
+   NOTION_TOKEN=your_notion_integration_token
+   OPENAI_API_KEY=your_openai_api_key
+   API_KEY=your_secure_api_key
+   JWT_SECRET=your_super_secret_key
+   ```
+5. 자동 배포 완료! 🎉
+
+> 📖 **상세한 Railway 배포 가이드**: [RAILWAY_ENV.md](RAILWAY_ENV.md) 참조
+
+### 방법 2: Docker 사용 (로컬)
 
 1. 환경 변수 설정
 ```bash
@@ -39,7 +55,7 @@ JWT_SECRET=your_secret_key
 docker-compose up -d
 ```
 
-### 방법 2: 로컬 설치
+### 방법 3: 로컬 설치
 
 1. 가상환경 생성 및 활성화
 ```bash
