@@ -45,4 +45,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
 
 # Change to backend directory and run the application
 WORKDIR /app/backend
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0"]
+# Railway sets PORT environment variable, use it or default to 8000
+CMD python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
