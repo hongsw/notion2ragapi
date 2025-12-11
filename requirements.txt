@@ -12,8 +12,9 @@ notion-client==2.2.1
 openai==1.6.1
 tiktoken
 
-# Vector Database - Using FAISS for Python 3.14 compatibility
-faiss-cpu
+# Vector Database - Multiple options for different deployments
+faiss-cpu  # Local development and Railway Volumes
+pinecone-client==3.0.0  # Managed vector database (recommended for Railway)
 # chromadb  # Temporarily disabled for Python 3.14
 # qdrant-client==1.7.0  # Optional for production
 

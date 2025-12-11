@@ -29,6 +29,14 @@ JWT_EXPIRATION_HOURS=24
 ```
 
 ### 4. 벡터 데이터베이스 설정
+
+**옵션 1: Pinecone (권장 - Railway 최적화)**
+```bash
+VECTOR_DB_TYPE=pinecone
+PINECONE_API_KEY=pc-your_actual_pinecone_api_key_here
+```
+
+**옵션 2: FAISS (Railway Volumes 사용)**
 ```bash
 VECTOR_DB_TYPE=chroma
 CHROMA_PERSIST_DIRECTORY=/app/chroma_db
@@ -99,6 +107,10 @@ METRICS_PORT=9090
    - `OPENAI_API_KEY`
    - `API_KEY`
    - `JWT_SECRET`
+
+4. **벡터 데이터베이스 설정 (중요!)**:
+   - **Pinecone 사용 (권장)**: `VECTOR_DB_TYPE=pinecone` + `PINECONE_API_KEY=pc-xxx`
+   - **FAISS 사용**: `VECTOR_DB_TYPE=chroma` (데이터 영속성 주의)
 
 ### 4단계: 배포 시작
 1. 환경 변수 설정 완료 후 자동 배포 시작
@@ -198,6 +210,24 @@ Railway는 GitHub과 연결되어 있어 `main` 브랜치에 push하면 자동�
 3. Railway에서 자동 빌드 및 배포
 4. 무중단 배포 (zero-downtime deployment)
 
+## 📊 벡터 데이터베이스 비교
+
+### Pinecone vs FAISS 비교
+
+| 기능 | Pinecone | FAISS (Railway Volumes) |
+|------|----------|-------------------------|
+| **데이터 영속성** | ✅ 완벽 보장 | ⚠️ 수동 백업 필요 |
+| **설정 복잡도** | ✅ 간단 (API 키만) | 🔧 볼륨 설정 필요 |
+| **비용** | 무료: 1M 벡터 | $0.25/GB/월 |
+| **성능** | ✅ 최적화됨 | 🔧 메모리 사용량 높음 |
+| **확장성** | ✅ 자동 스케일링 | ❌ 수동 관리 |
+| **Railway 호환성** | ✅ 완벽 | 🔧 볼륨 설정 필요 |
+
+### 권장사항
+- **프로덕션**: Pinecone (데이터 안정성)
+- **개발/테스트**: FAISS (비용 절약)
+- **대용량**: Pinecone (성능 및 관리 편의성)
+
 ## 💰 비용 관리
 
 ### 무료 티어 한도
@@ -206,8 +236,14 @@ Railway는 GitHub과 연결되어 있어 `main` 브랜치에 push하면 자동�
 - CPU: 1 vCPU
 - 네트워크: 100GB/월
 
+### Pinecone 무료 티어
+- 1M 벡터 저장
+- 1개 인덱스
+- 일반적으로 10-50K 문서 처리 가능
+
 ### 사용량 모니터링
 - Railway 대시보드에서 실시간 사용량 확인
+- Pinecone 대시보드에서 벡터 사용량 확인
 - 알림 설정으로 한도 초과 방지
 
 ## 🔒 보안 설정

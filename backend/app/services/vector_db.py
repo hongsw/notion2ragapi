@@ -76,17 +76,21 @@ class VectorDBService:
 
         if db_type == "chroma":
             # Use FAISS as ChromaDB replacement for Python 3.14 compatibility
+            from app.services.faiss_db import FAISSVectorDB
             self.db = FAISSVectorDB()
+            logger.info("Vector database initialized", type="faiss (chroma replacement)")
+        elif db_type == "pinecone":
+            # Use Pinecone for Railway deployment (persistent storage)
+            from app.services.pinecone_db import PineconeVectorDB
+            self.db = PineconeVectorDB()
+            logger.info("Vector database initialized", type="pinecone")
         # Add more database backends here as needed
         # elif db_type == "qdrant":
         #     self.db = QdrantVectorDB()
-        # elif db_type == "pinecone":
-        #     self.db = PineconeVectorDB()
         else:
             raise ValueError(f"Unsupported vector database type: {db_type}")
 
         await self.db.initialize()
-        logger.info("Vector database initialized", type="faiss (chroma replacement)")
 
     async def add_documents(self, documents: List[Dict[str, Any]]):
         """Add documents to the vector database."""
